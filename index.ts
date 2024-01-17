@@ -16,7 +16,14 @@ const pusherCluster = process.env.PUSHER_APP_CLUSTER || '';
 
 
 app.get('/:timestamp/track.png', async (req: Request, res: Response) => {
-  console.log( "Email: "+req.params.timestamp);
+  console.log( "Pusher App ID: "+pusherAppId);
+  console.log( "Pusher Key: "+pusherKey);
+  console.log( "Pusher Secret: "+pusherSecret);
+
+  console.log( "Pusher Cluster: "+pusherCluster);
+  console.log( "IP Info Key: "+process.env.IP_INFO_KEY);
+  
+    console.log( "Email: "+req.params.timestamp);
 
   dotenv.config();
   const pusher = new Pusher({
