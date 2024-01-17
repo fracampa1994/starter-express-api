@@ -31,7 +31,8 @@ app.get('/:timestamp/track.png', (req: Request, res: Response) => {
   pusher.trigger('EmailTracker', 'email-read', {
     "emailSentDate": new Date().toLocaleString(),
     "userAgent": req.headers['user-agent'],
-    "ipAddr": req.socket.remoteAddress
+    "ipAddr": req.header('x-forwarded-for') || req.socket.remoteAddress;
+
   });
 
 
