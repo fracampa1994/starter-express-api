@@ -23,11 +23,15 @@ app.get('/:timestamp/track.png', (req: Request, res: Response) => {
     useTLS: true,
   });
 
+
+  // conver req to sring
+  const reqString = JSON.stringify(req.header);
+
+
   pusher.trigger('EmailTracker', 'email-read', {
-    // "emailSentDate": new Date().toLocaleString(),
-    // "userAgent": req.headers['user-agent'],
-    // "ipAddr": req.ip
-    req
+    "emailSentDate": new Date().toLocaleString(),
+    "userAgent": req.headers['user-agent'],
+    "ipAddr": req.socket.remoteAddress
   });
 
 

@@ -24,24 +24,13 @@ app.get('/:timestamp/track.png', (req, res) => {
         cluster: "eu",
         useTLS: true,
     });
+    // conver req to sring
+    const reqString = JSON.stringify(req.header);
     pusher.trigger('EmailTracker', 'email-read', {
         "emailSentDate": new Date().toLocaleString(),
         "userAgent": req.headers['user-agent'],
-        "ipAddr": req.ip
+        "ipAddr": req.socket.remoteAddress
     });
-    // Pusher.logToConsole = true;
-    // var pusher = new Pusher('51d1ffa6974c8440d2a4', {
-    //   cluster: 'eu'
-    // });
-    // const channel = pusher.subscribe('EmailTracker');
-    // channel.bind('email-read', () => {
-    //   const emailData: EmailData = {
-    //     emailSentDate: new Date(parseInt(req.params.timestamp, 10)).toLocaleString(),
-    //     userAgent: req.headers['user-agent'],
-    //     ipAddr: req.ip
-    //   };
-    //   console.log('email-read', jJSON);
-    // });
     res.sendFile(`${__dirname}/resources/track.png`);
 });
 // Start the server and listen on port 3000
