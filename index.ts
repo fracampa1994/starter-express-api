@@ -9,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 
 const pusherAppId = process.env.PUSHER_APP_ID || '';
-const pusherKey = process.env.PUSHER_KEY || '';
+const pusherKey = process.env.PUSHER_APP_KEY || '';
 const pusherSecret = process.env.PUSHER_APP_SECRET;
 const pusherCluster = process.env.PUSHER_APP_CLUSTER || '';
 
