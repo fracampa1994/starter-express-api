@@ -1,7 +1,7 @@
 // Import necessary modules
 import express, { Request, Response } from 'express';
 import http from 'http';
-import Pusher from 'pusher-js';
+import Pusher from 'pusher';
 
 // Create Express app and HTTP server
 const app = express();
@@ -13,24 +13,39 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 
-// Define a route for tracking with timestamp
+// Define a route for tracking with timestamp 
 app.get('/:timestamp/track.png', (req: Request, res: Response) => {
-  Pusher.logToConsole = true;
-  var pusher = new Pusher('51d1ffa6974c8440d2a4', {
-    cluster: 'eu'
+  const pusher = new Pusher({
+    appId: "1742255",
+    key: "51d1ffa6974c8440d2a4",
+    secret: "517b8585fce75f9cb3d2",
+    cluster: "eu",
+    useTLS: true,
   });
 
-  const emailData: EmailData = {
-    emailSentDate: new Date(parseInt(req.params.timestamp, 10)).toLocaleString(),
-    userAgent: req.headers['user-agent'],
-    ipAddr: req.ip
-  };
-
-  const channel = pusher.subscribe('EmailTracker');
-
-  channel.bind('email-read', () => {
-    console.log('email-read', JSON.stringify(emailData));
+  pusher.trigger('EmailTracker', 'email-read', {
+    "emailSentDate": new Date().toLocaleString(),
+    "userAgent": req.headers['user-agent'],
+    "ipAddr": req.ip
   });
+
+  // Pusher.logToConsole = true;
+  // var pusher = new Pusher('51d1ffa6974c8440d2a4', {
+  //   cluster: 'eu'
+  // });
+
+
+
+  // const channel = pusher.subscribe('EmailTracker');
+
+  // channel.bind('email-read', () => {
+  //   const emailData: EmailData = {
+  //     emailSentDate: new Date(parseInt(req.params.timestamp, 10)).toLocaleString(),
+  //     userAgent: req.headers['user-agent'],
+  //     ipAddr: req.ip
+  //   };
+  //   console.log('email-read', jJSON);
+  // });
 
   res.sendFile(`${__dirname}/resources/track.png`);
 });
