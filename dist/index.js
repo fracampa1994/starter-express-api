@@ -16,12 +16,8 @@ const pusherAppId = process.env.PUSHER_APP_ID || '';
 const pusherKey = process.env.PUSHER_KEY || '';
 const pusherSecret = process.env.PUSHER_APP_SECRET;
 const pusherCluster = process.env.PUSHER_APP_CLUSTER || '';
-console.log(pusherAppId);
-console.log(pusherKey);
-console.log(pusherSecret);
-console.log(pusherCluster);
-console.log(process.env.IP_INFO_KEY);
 app.get('/:timestamp/track.png', async (req, res) => {
+    console.log("Email: " + req.params.timestamp);
     dotenv_1.default.config();
     const pusher = new pusher_1.default({
         appId: pusherAppId,
@@ -30,12 +26,10 @@ app.get('/:timestamp/track.png', async (req, res) => {
         cluster: pusherCluster,
         useTLS: true,
     });
-    const reqString = JSON.stringify(req.header);
     var ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
     const ipinfoWrapper = new node_ipinfo_1.default(process.env.IP_INFO_KEY);
     const geoInfo = await ipinfoWrapper.lookupIp(ip);
-    console.log(req.params.timestamp);
-    pusher.trigger('EmailTracker', 'email-read_', {
+    pusher.trigger('EmailTracker', (req.params.timestamp).toString(), {
         "emailSentDate": new Date().toLocaleString(),
         "userAgent": req.headers['user-agent'],
         "geoInfo": {
