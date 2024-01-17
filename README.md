@@ -1,11 +1,11 @@
-# starter-express-api
+# EmailTracker
 
-This is the simplest possible nodejs api using express that responds to any request with: 
-```
-Yo!
-```
+Trovare una piataforma hosting con un server web che espone immagini e un back end che le fornisce
 
-### Deploy it in 7 seconds: 
+il backend deve fornire un endpoint che se chiamato generi un file di testo chiamato timestamp_destinatario
+(che si trova nella richesta nel body o come query param)
 
-[![Deploy to Cyclic](https://deploy.cyclic.app/button.svg)](https://deploy.cyclic.app/)
+deve creare delle risorse che attinggono tutte alla stessa risorsa (pixel trasparente) di timpo immagine con un nome random , mappato con il file creato 1 a 1
+
+quando viene richesta la risorsa salvo il timestamp e la posizizione dell ip
 
