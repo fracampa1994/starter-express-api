@@ -3,16 +3,34 @@ import express, { Request, Response } from 'express';
 import http from 'http';
 import Pusher from 'pusher';
 import IPinfoWrapper from "node-ipinfo";
+import dotenv from 'dotenv';
 
 const app = express();
 const server = http.createServer(app);
 
+const pusherAppId = process.env.PUSHER_APP_ID || '';
+const pusherKey = process.env.PUSHER_KEY || '';
+const pusherSecret = process.env.PUSHER_APP_SECRET;
+const pusherCluster = process.env.PUSHER_APP_CLUSTER || '';
+
+console.log(pusherAppId)
+console.log(pusherKey)
+console.log(pusherSecret)
+console.log(pusherCluster)
+
+console.log(process.env.IP_INFO_KEY)
+
 app.get('/:timestamp/track.png', async (req: Request, res: Response) => {
+
+  dotenv.config();
+
+
+
   const pusher = new Pusher({
-    appId: process.env.PUSHER_APP_ID!,
-    key: process.env.PUSHER_KEY!,
-    secret: process.env.PUSHER_SECRET!,
-    cluster: process.env.PUSHER_CLUSTER!,
+    appId: pusherAppId,
+    key: pusherKey,
+    secret: pusherSecret!,
+    cluster: pusherCluster,
     useTLS: true,
   });
 
@@ -25,8 +43,9 @@ app.get('/:timestamp/track.png', async (req: Request, res: Response) => {
 
   const geoInfo = await ipinfoWrapper.lookupIp(ip);
 
+  console.log( req.params.timestamp);
 
-  pusher.trigger('EmailTracker', 'email-read', {
+  pusher.trigger('EmailTracker', 'email-read_' , {
     "emailSentDate": new Date().toLocaleString(),
     "userAgent": req.headers['user-agent'],
     "geoInfo": {

@@ -9,27 +9,33 @@ const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
 const pusher_1 = __importDefault(require("pusher"));
 const node_ipinfo_1 = __importDefault(require("node-ipinfo"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
-// Define a route for the root path
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-// Define a route for tracking with timestamp 
+const pusherAppId = process.env.PUSHER_APP_ID || '';
+const pusherKey = process.env.PUSHER_KEY || '';
+const pusherSecret = process.env.PUSHER_APP_SECRET;
+const pusherCluster = process.env.PUSHER_APP_CLUSTER || '';
+console.log(pusherAppId);
+console.log(pusherKey);
+console.log(pusherSecret);
+console.log(pusherCluster);
+console.log(process.env.IP_INFO_KEY);
 app.get('/:timestamp/track.png', async (req, res) => {
+    dotenv_1.default.config();
     const pusher = new pusher_1.default({
-        appId: "1742255",
-        key: "51d1ffa6974c8440d2a4",
-        secret: "517b8585fce75f9cb3d2",
-        cluster: "eu",
+        appId: pusherAppId,
+        key: pusherKey,
+        secret: pusherSecret,
+        cluster: pusherCluster,
         useTLS: true,
     });
-    // conver req to sring
     const reqString = JSON.stringify(req.header);
     var ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-    const ipinfoWrapper = new node_ipinfo_1.default("71b34d9dcdc2f9");
-    const geoInfo = await ipinfoWrapper.lookupIp("87.21.247.21");
-    pusher.trigger('EmailTracker', 'email-read', {
+    const ipinfoWrapper = new node_ipinfo_1.default(process.env.IP_INFO_KEY);
+    const geoInfo = await ipinfoWrapper.lookupIp(ip);
+    console.log(req.params.timestamp);
+    pusher.trigger('EmailTracker', 'email-read_', {
         "emailSentDate": new Date().toLocaleString(),
         "userAgent": req.headers['user-agent'],
         "geoInfo": {
