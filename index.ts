@@ -1,7 +1,7 @@
 // Import necessary modules
 import express, { Request, Response } from 'express';
-import fs from 'fs';
 import http from 'http';
+import Pusher from 'pusher-js';
 
 // Create Express app and HTTP server
 const app = express();
@@ -12,31 +12,26 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
+
 // Define a route for tracking with timestamp
 app.get('/:timestamp/track.png', (req: Request, res: Response) => {
-  // Convert timestamp to a readable date string
-  const emailSentDate = new Date(parseInt(req.params.timestamp, 10)).toLocaleString();
+  Pusher.logToConsole = true;
+  var pusher = new Pusher('51d1ffa6974c8440d2a4', {
+    cluster: 'eu'
+  });
 
-  // Create a log file with the timestamp in the URL
-  const logFile = `${__dirname}/../logs/${req.params.timestamp}.log`;
-  if (!fs.existsSync(logFile)) {
-    fs.writeFileSync(logFile, '');
-    fs.appendFileSync(logFile, `## Email: ${emailSentDate}\n`);
-  }
+  const emailData: EmailData = {
+    emailSentDate: new Date(parseInt(req.params.timestamp, 10)).toLocaleString(),
+    userAgent: req.headers['user-agent'],
+    ipAddr: req.ip
+  };
 
-  // Log the timestamp of the request
-  console.log(req.params.timestamp);
-  fs.appendFileSync(logFile, `${emailSentDate}\n`);
+  const channel = pusher.subscribe('EmailTracker');
 
-  // Log user-agent header
-  console.log(req.headers['user-agent']);
-  fs.appendFileSync(logFile, `${req.headers['user-agent']}\n`);
+  channel.bind('email-read', () => {
+    console.log('email-read', JSON.stringify(emailData));
+  });
 
-  // Log IP address
-  console.log(req.ip);
-  fs.appendFileSync(logFile, `${req.ip}\n`);
-
-  // Send the track.png file in response
   res.sendFile(`${__dirname}/resources/track.png`);
 });
 
@@ -44,3 +39,18 @@ app.get('/:timestamp/track.png', (req: Request, res: Response) => {
 server.listen(3000, () => {
   console.log('listening on *:3000');
 });
+
+
+
+export class EmailData {
+  public emailSentDate: string;
+  public userAgent: string | undefined;
+  public ipAddr: string | undefined;
+
+  constructor(emailSentDate: string, userAgent: string, ipAddr: string) {
+    this.emailSentDate = emailSentDate;
+    this.userAgent = userAgent;
+    this.ipAddr = ipAddr;
+  }
+
+}
